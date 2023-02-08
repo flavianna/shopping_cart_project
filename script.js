@@ -2,7 +2,22 @@
 // experimente passar o mouse sobre o nome das funções e verá que elas possuem descrições!
 
 const cartItems = document.querySelector('.cart__items');
+const cart = document.querySelector('.cart');
 cartItems.innerHTML = getSavedCartItems();
+
+const createTotalPrice = document.createElement('p');
+createTotalPrice.className = 'total-price';
+cart.appendChild(createTotalPrice);
+createTotalPrice.innerText = 0;
+
+const getPrice = () => {
+  const prices = [];
+  for (let index = 0; index <= cartItems.children.length - 1; index += 1) {
+    prices.push(Number(cartItems.children[index].getAttribute('price')));
+  }
+  const sum = prices.reduce((acc, curr) => acc + curr, 0);
+  createTotalPrice.innerText = `Subtotal R$ ${sum}`;
+};
 
 // Função responsável por criar e retornar o elemento de imagem do produto.
 const createProductImageElement = (imageSource) => {
@@ -60,6 +75,8 @@ const createCartItemElement = ({ id, thumbnail, title, price }) => {
   itemDetails.innerText = `ID: ${id} | TITLE: ${title} | PRICE: $${price}`;
   li.appendChild(itemDetails);
 
+  li.setAttribute('price', price);
+
   return li;
 };
 
@@ -68,6 +85,7 @@ const addItemToCart = async (id) => {
   const fetchItemId = await fetchItem(id);
   cartItems.appendChild(createCartItemElement(fetchItemId));
   await saveCartItems(cartItems.innerHTML);
+  getPrice();
 };
 
 // Função que adiciona um event listener a cada botão "item__add" na página. 
@@ -82,6 +100,7 @@ const bindAddToCartButton = () => {
 const removeButtonHandler = (event) => {
   cartItems.removeChild(event.target);
   saveCartItems(cartItems.innerHTML);
+  getPrice();
 };
 
 cartItems.addEventListener('click', removeButtonHandler);
@@ -93,6 +112,7 @@ const clearCartHandler = () => {
     Array.from(cartItems.children).forEach((element) => {
       cartItems.removeChild(element);
       localStorage.clear();
+      getPrice();
     });
   });
 };
