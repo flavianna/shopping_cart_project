@@ -47,11 +47,19 @@ const creatList = async () => {
 };
 
 // Função responsável por criar e retornar um item do carrinho.
-const createCartItemElement = ({ id, title, price }) => {
+const createCartItemElement = ({ id, thumbnail, title, price }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
-  li.innerText = `ID: ${id} | TITLE: ${title} | PRICE: $${price}`;
-  // li.addEventListener('click', cartItemClickListener);
+  
+  const thumbnailElement = document.createElement('img');
+  thumbnailElement.src = thumbnail;
+  thumbnailElement.alt = title;
+  li.appendChild(thumbnailElement);
+  
+  const itemDetails = document.createElement('div');
+  itemDetails.innerText = `ID: ${id} | TITLE: ${title} | PRICE: $${price}`;
+  li.appendChild(itemDetails);
+
   return li;
 };
 
@@ -62,7 +70,7 @@ const addItemToCart = async (id) => {
   await saveCartItems(cartItems.innerHTML);
 };
 
-// Função adiciona um event listener a cada botão "item__add" na página. 
+// Função que adiciona um event listener a cada botão "item__add" na página. 
 const bindAddToCartButton = () => {
   document.querySelectorAll('.item__add').forEach((btn) =>
     btn.addEventListener('click', (e) => {
@@ -78,7 +86,7 @@ const removeButtonHandler = (event) => {
 
 cartItems.addEventListener('click', removeButtonHandler);
 
-// Função para limpar carrinho de compras
+// Função que limpa carrinho de compras.
 const clearCartHandler = () => {
   const buttClearCart = document.querySelector('.empty-cart');
   buttClearCart.addEventListener('click', () => {
