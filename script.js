@@ -1,6 +1,9 @@
 // Esse tipo de comentário que estão antes de todas as funções são chamados de JSdoc,
 // experimente passar o mouse sobre o nome das funções e verá que elas possuem descrições!
 
+const cartItems = document.querySelector('.cart__items');
+cartItems.innerHTML = getSavedCartItems();
+
 // Função responsável por criar e retornar o elemento de imagem do produto.
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');
@@ -43,24 +46,20 @@ const creatList = async () => {
   });
 };
 
-// Função que remove o produto do carrinho ao ser clicado.
-const cartItemClickListener = (e) => e.target.remove();
-
 // Função responsável por criar e retornar um item do carrinho.
 const createCartItemElement = ({ id, title, price }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
   li.innerText = `ID: ${id} | TITLE: ${title} | PRICE: $${price}`;
-  li.addEventListener('click', cartItemClickListener);
+  // li.addEventListener('click', cartItemClickListener);
   return li;
 };
 
 // Função que adiciona um item ao carrinho (pesca pelo id).
 const addItemToCart = async (id) => {
   const fetchItemId = await fetchItem(id);
-  const father = document.getElementsByClassName('cart__items')[0];
-  const child = createCartItemElement(fetchItemId);
-  father.appendChild(child);
+  cartItems.appendChild(createCartItemElement(fetchItemId));
+  await saveCartItems(cartItems.innerHTML);
 };
 
 // Função adiciona um event listener a cada botão "item__add" na página. 
@@ -72,7 +71,26 @@ const bindAddToCartButton = () => {
     }));
 };
 
+const removeButtonHandler = (event) => {
+  cartItems.removeChild(event.target);
+  saveCartItems(cartItems.innerHTML);
+};
+
+cartItems.addEventListener('click', removeButtonHandler);
+
+// Função para limpar carrinho de compras
+const clearCartHandler = () => {
+  const buttClearCart = document.querySelector('.empty-cart');
+  buttClearCart.addEventListener('click', () => {
+    Array.from(cartItems.children).forEach((element) => {
+      cartItems.removeChild(element);
+      localStorage.clear();
+    });
+  });
+};
+
 window.onload = async () => {
   await creatList();
   bindAddToCartButton();
+  clearCartHandler();
 };
