@@ -10,13 +10,17 @@ createTotalPrice.className = 'total-price';
 cart.appendChild(createTotalPrice);
 createTotalPrice.innerText = 0;
 
+// Função que soma os valores do carrinho de compras.
 const getPrice = () => {
   const prices = [];
   for (let index = 0; index <= cartItems.children.length - 1; index += 1) {
     prices.push(Number(cartItems.children[index].getAttribute('price')));
   }
   const sum = prices.reduce((acc, curr) => acc + curr, 0);
-  createTotalPrice.innerText = `Subtotal R$ ${sum}`;
+  createTotalPrice.innerText = `Subtotal ${sum.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  })}`;
 };
 
 // Função responsável por criar e retornar o elemento de imagem do produto.
@@ -43,7 +47,7 @@ const createProductItemElement = ({ id, title, thumbnail, price }) => {
   section.appendChild(createCustomElement('span', 'item_id', id));
   section.appendChild(createProductImageElement(thumbnail));
   section.appendChild(createCustomElement('span', 'item__title', title));
-  section.appendChild(createCustomElement('span', 'item__title', price));
+  section.appendChild(createCustomElement('span', 'item__price', `R$ ${price}`));
   section.appendChild(
     createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'),
   );
@@ -72,6 +76,7 @@ const createCartItemElement = ({ id, thumbnail, title, price }) => {
   li.appendChild(thumbnailElement);
   
   const itemDetails = document.createElement('div');
+  itemDetails.className = 'cart__item-details';
   itemDetails.innerText = `ID: ${id} | TITLE: ${title} | PRICE: $${price}`;
   li.appendChild(itemDetails);
 
